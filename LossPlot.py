@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 
-num_of_epochs1 = 300
-num_of_epochs2 = 150
+num_of_epochs1 = 1000
+num_of_epochs2 = 3000
 
-overfit_loss = open('0.0 0.002 0.0 1.0 scheduler = Trueoverfit.txt', 'r')
-loss = open('0.0 0.002 0.0 1.0 scheduler = Truetrain.txt','r')
+overfit_loss = open('0.0 0.4 0.0 0.8 scheduler = True overfit.txt', 'r')
+loss = open('0.0 0.4 0.0 0.8 scheduler = True train_dropout0.2_with_aug.txt','r')
 
 i=0
 epochs1 =[]
@@ -30,7 +30,8 @@ for j in range(num_of_epochs2):
       epochs2 += [int(words2[1])]
       loss2 += [float(words2[3])]
 
-plt.plot(epochs1,loss1 , epochs2,loss2)
+plt.plot(epochs1,loss1)
+plt.plot(epochs2,loss2)
 plt.xlabel('number of epoch')
 plt.ylabel('Loss')
 plt.title("Loss functions")
@@ -38,4 +39,3 @@ plt.show()
 
 
 overfit_loss.close()
-loss.close()

@@ -76,6 +76,7 @@ def calcLoss(pred, target, weights,device):
     
     ssim_loss=pytorch_ssim.SSIM(window_size=11)
     pred_rgb, target_rgb = tensor_to_rgb(pred, target, False,device)
+    #add plot of both of them
     l1loss=nn.L1Loss()
     rmse_loss = rmse(pred_rgb, target_rgb) if weights[0]!=0 else 0
     rgb_loss = (1-ssim_loss(pred_rgb, target_rgb)) if weights[1]!=0 else 0

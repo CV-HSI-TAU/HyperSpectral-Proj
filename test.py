@@ -16,28 +16,31 @@ from output_visualization import tensor_to_rgb
 # Params
 width = 500
 height = 600
-hyperspectral_dim = 50
+hyperspectral_dim = 3
 input_channels = 26
 
 # Net and device initialization
 net = HyperNet(n_channels=input_channels, n_output=hyperspectral_dim) # Note hypernet is in Model file
+#net.eval()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 if torch.cuda.device_count() > 1:
    print("Let's use", torch.cuda.device_count(), "GPUs!")
    net = nn.DataParallel(net)
 
+
 # Model to test
-main_folder = r'/home/adirido/PycharmProjects/hyperNet2/'
-model_name_to_test = r' ' # Under hypernet2
+main_folder = r'/data/students/adirido/'
+model_name_to_test = r'train_model_with_SSIM_0.4_3WL_with_aug' # Under hypernet2
 net.to(device)
-net.load_state_dict(torch.load(os.path.join(main_folder, model_name_to_test)))
-path_mono = ''            # Folder name under hypernet2
-path_hs = ''              # Folder name under hypernet2
+net.load_state_dict(torch.load(os.path.join('/home/adirido/PycharmProjects/hyperNet2/', model_name_to_test)))
+path_mono = 'Test3 HS+Mono'            # Folder name under hypernet2
+path_hs = 'Test3 HS+Mono'              # Folder name under hypernet2
 
 # Initialization
-data_set = AllDataset(height=height, width=width,mono_path=os.path.join(main_folder, path_mono, 'Data Mono'), hs_path=os.path.join(main_folder, path_HS, 'Data HS'))
-test = DataLoader(dataset=data_set, batch_size=1)
+data_set = AllDataset(height=height, width=width,mono_path=os.path.join(main_folder, path_mono, 'Data Mono'), hs_path=os.path.join(main_folder, path_hs, 'Data HS'))
+test = DataLoader(dataset=data_set, batch_size=6)
 
+(mono, hs_tensor) = data_set.__getitem__(0)
 # Test loop
 with torch.no_grad():
     for i, (data, labels) in enumerate(test):

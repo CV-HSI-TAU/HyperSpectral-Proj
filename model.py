@@ -92,7 +92,7 @@ class UNet(nn.Module):
         factor = 2 if bilinear else 1
         self.down4 = Down(512, 1024 // factor)
         self.midConv = DoubleConv(1024 // factor ,1024 // factor)
-        #self.drop = torch.nn.Dropout(0.5)
+        #self.drop = torch.nn.Dropout(0.2)
         self.up1 = Up(1024, 512 // factor, bilinear)
         self.up2 = Up(512, 256 // factor, bilinear)
         self.up3 = Up(256, 128 // factor, bilinear)

@@ -25,24 +25,20 @@ if __name__ == '__main__':
 
     width = 500
     height = 600
-    hyperspectral_dim = 50
+    hyperspectral_dim = 3
     input_channels = 26
 
 
+    net = HyperNet(n_channels = input_channels, n_output = hyperspectral_dim)
     transforms = trans.Compose([
         trans.RandomVerticalFlip(0.25),
         trans.RandomHorizontalFlip(0.25)
     ])
+    
 
-    ## Net, Dataloader and device:
-    net = HyperNet(n_channels = input_channels, n_output = hyperspectral_dim)
-    path_mono = ''  # Folder name under hypernet2
-    path_hs = ''  # Folder name under hypernet2
-
-    # Initialization
-    data_set = AllDataset(height=height, width=width, mono_path=os.path.join(main_folder, path_mono, 'Data Mono'),
-                          hs_path=os.path.join(main_folder, path_HS, 'Data HS'))
-    trainloader = DataLoader(dataset=data_set, batch_size=1)
+    ## Dataloader and device:
+    data_set = AllDataset(height=height, width=width,mono_path=r'/data/students/adirido/Data_HS_Mono/Data Mono/', hs_path=r'/data/students/adirido/Data_HS_Mono/Data HS/', transform = transforms)
+    trainloader = DataLoader(dataset=data_set, batch_size=6, shuffle = True)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     if torch.cuda.device_count() > 1:
         print("Let's use", torch.cuda.device_count(), "GPUs!")
@@ -52,17 +48,17 @@ if __name__ == '__main__':
 
     ## Define optimizer and train
     lr = 0.001
-    step_size = 200
+    step_size = 600
     gamma = 0.5
-    epochs =  1000
-    PATH = 'overfit_model'
+    epochs =  5000
+    PATH = 'train_model_with_SSIM_0.4_3WL_with_aug'
 
     ## Run params
     sched = True
     """
     Weights defined as rmse , rgb , spectral, L1
     """
-    weights = [0.0, 0.02, 0.0, 1.0]
+    weights = [0.0, 0.4, 0.0, 0.8] #Sum 1.2
 
     ## Loss handlers
     optimizer = optim.Adam(net.parameters(), lr=lr)
@@ -73,7 +69,7 @@ if __name__ == '__main__':
     start_time=time.time()
 
     str_w = ' '.join([str(item) for item in weights])
-    loss_file = open(str_w + " " + 'scheduler = ' + str(sched) + " overfit" + ".txt", "w")
+    loss_file = open(str_w + " " + 'scheduler = ' + str(sched) + " train_3WL_with_aug" + ".txt", "w")
     loss_file.write(str_w + " " + 'scheduler = ' + str(sched) + '\n')
     loss_file.write("Started executing at: " + str( start_time ) + '\n')
     print('Start Training The Model')
@@ -92,7 +88,7 @@ if __name__ == '__main__':
 
             output = net(inputs)
             #loss = calcLoss(output.cpu().detach(), labels.cpu().detach(), weights)
-            loss = calcLoss(output, labels, weights, device)
+            loss = calcLoss(output, labels, weights,device)
             #loss_var = Variable(loss, requires_grad = True)
             loss.backward()
             optimizer.step()
@@ -108,7 +104,7 @@ if __name__ == '__main__':
         if sched:
             scheduler.step()
 
-        if (epoch+1) % int(epochs/5) == 0:      # Saves checkpoint 5 times in a train
+        if (epoch+1) % (int(epochs)/5) == 0:
             torch.save(net.state_dict(), PATH)
             print('Saved Model', PATH)
 
