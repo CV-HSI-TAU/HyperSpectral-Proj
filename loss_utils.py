@@ -83,5 +83,5 @@ def calcLoss(pred, target, weights,device):
     spectral_loss = (spectral(pred, target)) if weights[2]!=0 else 0
     l1_loss = l1loss(pred, target) if weights[3]!=0 else 0
     loss = rmse_loss * weights[0] + rgb_loss * weights[1] + spectral_loss * weights[2] + l1_loss * weights[3]
-    print("rmse loss %.5f, rgb_loss %.5f , spectral loss %.5f , L1 %.9f " % (weights[0]*rmse_loss, weights[1]*rgb_loss, weights[2]*spectral_loss, weights[3]*l1_loss))
+    # print("rmse loss %.5f, rgb_loss %.5f , spectral loss %.5f , L1 %.9f " % (weights[0]*rmse_loss, weights[1]*rgb_loss, weights[2]*spectral_loss, weights[3]*l1_loss))
     return loss
